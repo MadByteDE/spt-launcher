@@ -392,14 +392,16 @@ public class ConfigHelper
     {
         lock (_lock)
         {
-            if (_settings!.GamePath.Contains("drive_c"))
+            var gamePath = GetGamePath();
+
+            return gamePath switch
             {
-                return _settings!.GamePath.Split("/drive_c")[0];
-            }
-            else
-            {
-                return _settings!.LinuxSettings.PrefixPath;
-            }
+                var path when path.Contains("drive_c") => path.Split("/drive_c")[0],
+
+                var path when Directory.Exists(path) => Path.Combine(path, "prefix"),
+
+                _ => _settings!.LinuxSettings.PrefixPath,
+            };
         }
     }
 
@@ -438,7 +440,21 @@ public class ConfigHelper
 
     public bool IsPrefixPathValid(string path)
     {
-        return !string.IsNullOrEmpty(path) && Directory.Exists(path) && File.Exists(Path.Combine(path, "system.reg"));
+        if (string.IsNullOrWhiteSpace(path) || File.Exists(path) || !Path.IsPathRooted(path))
+        {
+            return false;
+        }
+
+        // Match existing wine prefix directory
+        if (Directory.Exists(path))
+        {
+            return File.Exists(Path.Combine(path, "system.reg"));
+        }
+
+        // Match non-existent, but possible directory path
+        var parent = Directory.GetParent(path)?.FullName;
+
+        return parent is not null && Directory.Exists(parent);
     }
 
     public bool IsUmuPathValid(string path)
