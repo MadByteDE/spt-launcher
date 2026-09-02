@@ -438,6 +438,8 @@ public class ConfigHelper
         }
     }
 
+    // TODO: We should check if the user has write permission for a path at some point
+
     public bool IsPrefixPathValid(string path)
     {
         if (string.IsNullOrWhiteSpace(path) || File.Exists(path) || !Path.IsPathRooted(path))
@@ -445,13 +447,11 @@ public class ConfigHelper
             return false;
         }
 
-        // Match existing wine prefix directory
         if (Directory.Exists(path))
         {
             return File.Exists(Path.Combine(path, "system.reg"));
         }
 
-        // Match non-existent, but possible directory path
         var parent = Directory.GetParent(path)?.FullName;
 
         return parent is not null && Directory.Exists(parent);
@@ -459,11 +459,21 @@ public class ConfigHelper
 
     public bool IsUmuPathValid(string path)
     {
-        return !string.IsNullOrEmpty(path) && File.Exists(path) && Path.GetFileName(path) == "umu-run";
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path) || !Path.IsPathRooted(path))
+        {
+            return false;
+        }
+
+        return Path.GetFileName(path) == "umu-run";
     }
 
     public bool IsProtonVersionValid(string path)
     {
-        return !string.IsNullOrEmpty(path) && Directory.Exists(path);
+        if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path) || path.Contains("LegacyRuntime"))
+        {
+            return false;
+        }
+
+        return File.Exists(Path.Combine(path, "compatibilitytool.vdf"));
     }
 }
