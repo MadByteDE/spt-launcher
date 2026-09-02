@@ -277,7 +277,7 @@ public class ConfigHelper
         }
     }
 
-    public bool AddLinuxProtonSearchPath(string linuxProtonSearchPath)
+    public void AddLinuxProtonSearchPath(string linuxProtonSearchPath)
     {
         lock (_lock)
         {
@@ -288,13 +288,7 @@ public class ConfigHelper
                 _settings.LinuxSettings.ProtonPaths.Add(linuxProtonSearchPath);
                 SaveConfig();
             }
-            else
-            {
-                return false;
-            }
         }
-
-        return true;
     }
 
     public void SetLinuxGameMode(bool linuxGameMode)

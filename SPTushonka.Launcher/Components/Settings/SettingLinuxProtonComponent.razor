@@ -1,7 +1,5 @@
-@inject LocaleHelper LocaleHelper
-@inject ConfigHelper ConfigHelper
+@inherits SettingComponentBase
 @inject LinuxHelper LinuxHelper
-@inject ISnackbar Snackbar
 
 <MudContainer Class="pa-0">
     <MudLink Color="Color.Default" Underline="Underline.None" Disabled="Disabled" Class="@(GetLinkClasses())">
@@ -18,7 +16,7 @@
     </MudLink>
     <a class="d-flex justify-center align-center py-2 px-5">
         <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" 
-                OnClick="AddProtonPath" Color="Color.Primary" Size="Size.Small">
+                OnClick="SetFolderPath" Color="Color.Primary" Size="Size.Small">
             @LocaleHelper.Get("linux_add_proton_path")
         </MudButton>
     </a>
@@ -30,6 +28,10 @@
 
 @code {
 
+    private string _selectedOption = "";
+
+    private List<string> Options { get; set; } = [];
+
     protected override async Task OnInitializedAsync()
     {
         _selectedOption = ConfigHelper.GetConfig().LinuxSettings.ProtonVersion;
@@ -37,66 +39,23 @@
         await base.OnInitializedAsync();
     }
 
-    private string _selectedOption = "";
-
-    [Parameter]
-    public bool Disabled { get; set; }
-    [Parameter]
-    public bool AddDiv { get; set; }
-
-    private string NewValue { get; set; } = "";
-
-    private List<string> Options { get; set; } = [];
-
-    private bool HasError => !ConfigHelper.IsProtonVersionValid(_selectedOption);
-
-    private async Task AddProtonPath()
+    protected override async Task SaveValue(string value)
     {
-        var folder = await Launcher.App.MainWindow.ShowOpenFolderAsync(title: "Choose a Folder", defaultPath: FilePickerHelper.StartDirectory(NewValue));
+        ConfigHelper.AddLinuxProtonSearchPath(NewValue);
 
-        // no folder was selected
-        if (!folder.Any())
+        var protonPaths = ConfigHelper.GetConfig().LinuxSettings.ProtonPaths;
+
+        if (protonPaths.Contains(NewValue))
         {
-            return;
+            Snackbar.Add(LocaleHelper.Get("setting_save_path_success"), Severity.Success);
         }
 
-        NewValue = folder.FirstOrDefault("");
-        
-        if (Save())
-        {
-            Options = await LinuxHelper.GetProtonVersions();
-        }
-        
-        StateHasChanged();
+        Options = await LinuxHelper.GetProtonVersions();
     }
 
-    private string GetLinkClasses()
+    protected override bool ValidateValue(string value)
     {
-        var classes = new CssBuilder()
-            .AddClass("d-flex")
-            .AddClass("justify-center")
-            .AddClass("align-center")
-            .AddClass("py-2")
-            .AddClass("pl-5");
-
-        if (!Disabled)
-        {
-            classes.AddClass("cursor-pointer").AddClass("setting-on-hover");
-        }
-
-        return classes.Build();
-    }
-    
-    private bool Save()
-    {
-        if (!ConfigHelper.AddLinuxProtonSearchPath(NewValue))
-        {
-            Snackbar.Add(LocaleHelper.Get("setting_save_path_error_2"), Severity.Warning);
-            return false;
-        }
-
-        Snackbar.Add(LocaleHelper.Get("setting_save_path_success"), Severity.Success);
-        return true;
+        return !ConfigHelper.IsProtonVersionValid(_selectedOption);
     }
 
     private void OnValueChanged(string value)
@@ -105,4 +64,5 @@
         ConfigHelper.SetLinuxProtonVersion(value);
         StateHasChanged();
     }
+
 }
