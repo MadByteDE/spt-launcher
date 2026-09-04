@@ -438,6 +438,39 @@ public class ConfigHelper
         }
     }
 
+    public string TryDetectUmuPath()
+    {
+        // 'command -v' only returns a single path or nothing if umu-run isn't found
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "/bin/sh",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            ArgumentList = { "-c", "command -v umu-run" },
+        };
+
+        try
+        {
+            var process = Process.Start(startInfo);
+            var umuPath = process!.StandardOutput.ReadToEnd().Trim();
+
+            process.WaitForExit();
+
+            if (process.ExitCode == 0 && IsUmuPathValid(umuPath))
+            {
+                return umuPath;
+            }
+
+            return _settings!.LinuxSettings.UmuPath;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Umu path detection failed: {Exception}", ex);
+            return _settings!.LinuxSettings.UmuPath;
+        }
+    }
+
     public bool IsPrefixPathValid(string path)
     {
         if (string.IsNullOrWhiteSpace(path) || File.Exists(path) || !Path.IsPathRooted(path))
