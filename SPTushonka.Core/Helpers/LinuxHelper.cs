@@ -33,6 +33,9 @@ public class LinuxHelper(ILogger<LinuxHelper> logger, ConfigHelper configHelper)
         // this looks something like this: "/home/{username}/.steam/steam/compatibilitytools.d/GE-Proton11-5"
         var protonPath = configHelper.GetConfig().LinuxSettings.ProtonVersion;
 
+        // This looks something like this: "MANGOHUD=1 PROTON_USE_XALIA=0 --disable-software-renderer"
+        var defaultEnv = configHelper.GetConfig().LinuxSettings.DefaultEnv;
+
         if (string.IsNullOrEmpty(prefixPath) || string.IsNullOrEmpty(umuPath) || string.IsNullOrEmpty(protonPath))
         {
             logger.LogError("Prefix path and umu path and proton version are required");
@@ -53,12 +56,7 @@ public class LinuxHelper(ILogger<LinuxHelper> logger, ConfigHelper configHelper)
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WorkingDirectory = sptPath,
-                Environment =
-                {
-                    { "GAMEID", "umu-sptushonka" },
-                    { "WINEPREFIX", prefixPath },
-                    { "PROTONPATH", protonPath },
-                },
+                Environment = { { "WINEPREFIX", prefixPath }, { "PROTONPATH", protonPath } },
                 ArgumentList = { umuPath, cmd },
             };
         }
@@ -70,12 +68,7 @@ public class LinuxHelper(ILogger<LinuxHelper> logger, ConfigHelper configHelper)
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WorkingDirectory = sptPath,
-                Environment =
-                {
-                    { "GAMEID", "umu-sptushonka" },
-                    { "WINEPREFIX", prefixPath },
-                    { "PROTONPATH", protonPath },
-                },
+                Environment = { { "WINEPREFIX", prefixPath }, { "PROTONPATH", protonPath } },
                 ArgumentList = { cmd },
             };
         }
@@ -89,7 +82,13 @@ public class LinuxHelper(ILogger<LinuxHelper> logger, ConfigHelper configHelper)
             }
         }
 
+        // Combine DefaultEnv with LaunchSettings tokens
         var tokens = new List<string>();
+
+        if (!string.IsNullOrEmpty(defaultEnv))
+        {
+            tokens.Add(defaultEnv);
+        }
 
         tokens.AddRange(TokenizeLaunchSettings(configHelper.GetConfig().LinuxSettings.LaunchSettings));
 

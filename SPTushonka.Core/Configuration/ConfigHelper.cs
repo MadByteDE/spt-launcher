@@ -386,16 +386,14 @@ public class ConfigHelper
     {
         lock (_lock)
         {
-            var gamePath = GetGamePath();
-
-            return gamePath switch
+            if (_settings!.GamePath.Contains("drive_c"))
             {
-                var path when path.Contains("drive_c") => path.Split("/drive_c")[0],
-
-                var path when Directory.Exists(path) => Path.Combine(path, "prefix"),
-
-                _ => _settings!.LinuxSettings.PrefixPath,
-            };
+                return _settings!.GamePath.Split("/drive_c")[0];
+            }
+            else
+            {
+                return _settings!.LinuxSettings.PrefixPath;
+            }
         }
     }
 
@@ -436,19 +434,7 @@ public class ConfigHelper
 
     public bool IsPrefixPathValid(string path)
     {
-        if (string.IsNullOrWhiteSpace(path) || File.Exists(path) || !Path.IsPathRooted(path))
-        {
-            return false;
-        }
-
-        if (Directory.Exists(path))
-        {
-            return File.Exists(Path.Combine(path, "system.reg"));
-        }
-
-        var parent = Directory.GetParent(path)?.FullName;
-
-        return parent is not null && Directory.Exists(parent);
+        return !string.IsNullOrEmpty(path) && Directory.Exists(path) && File.Exists(Path.Combine(path, "system.reg"));
     }
 
     public bool IsUmuPathValid(string path)

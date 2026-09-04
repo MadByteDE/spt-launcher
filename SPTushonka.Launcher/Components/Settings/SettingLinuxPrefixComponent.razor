@@ -8,9 +8,8 @@
                     Margin="Margin.Dense" Adornment="Adornment.End"
                     AdornmentIcon="@Icons.Material.Filled.Folder"
                     AdornmentColor="Color.Info" OnAdornmentClick="SetFolderPath"
-                    HelperText="@(!Directory.Exists(NewValue) ? LocaleHelper.Get("setting_help_prefix") : "")"
                     Error="@(HasError)"
-                    ErrorText="@(LocaleHelper.Get("setting_error_prefix"))"/>
+                    ErrorText="@(LocaleHelper.Get("setting_help_prefix"))"/>
         <MudIconButton Color="@(IsSaved ? Color.Default : Color.Success)" Icon="@Icons.Material.Filled.Save"
                     Disabled="IsSaved" OnClick="Save"/>
     </MudLink>

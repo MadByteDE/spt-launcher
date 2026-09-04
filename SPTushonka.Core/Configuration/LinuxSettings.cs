@@ -19,4 +19,7 @@ public record LinuxSettings
     public List<string> ProtonPaths { get; set; } = new();
 
     public bool GameMode { get; set; }
+
+    /// <summary>Default environment variables required to run the client.</summary>
+    public string DefaultEnv { get; set; } = @"WINEDLLOVERRIDES=""winhttp=n,b""";
 }
