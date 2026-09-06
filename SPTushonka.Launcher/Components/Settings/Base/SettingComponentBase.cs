@@ -58,7 +58,7 @@ public abstract class SettingComponentBase : ComponentBase
         return classes.Build();
     }
 
-    protected async Task OnNewValueChanged(string value)
+    protected virtual async Task OnNewValueChanged(string value)
     {
         NewValue = value;
 
@@ -77,7 +77,7 @@ public abstract class SettingComponentBase : ComponentBase
         catch (TaskCanceledException) { }
     }
 
-    protected async Task SetFilePath()
+    protected virtual async Task SetFilePath()
     {
         var file = await Launcher.App.MainWindow.ShowOpenFileAsync(
             title: "Choose File",
@@ -95,7 +95,7 @@ public abstract class SettingComponentBase : ComponentBase
         await Save();
     }
 
-    protected async Task SetFolderPath()
+    protected virtual async Task SetFolderPath()
     {
         var folder = await Launcher.App.MainWindow.ShowOpenFolderAsync(
             title: "Choose Folder",
@@ -113,7 +113,7 @@ public abstract class SettingComponentBase : ComponentBase
         await Save();
     }
 
-    protected async Task Save()
+    protected virtual async Task Save()
     {
         HasError = !ValidateValue();
 
