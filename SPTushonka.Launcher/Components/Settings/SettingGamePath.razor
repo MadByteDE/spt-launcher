@@ -61,7 +61,7 @@
 
     protected override bool ValidateValue()
     {
-        return Directory.Exists(NewValue);
+        return ConfigHelper.IsGamePathValid(NewValue);
     }
 
     private Task SetEnabled()
@@ -70,6 +70,7 @@
 
         ConfigHelper.SetEnableGamePath(Enabled);
         NewValue = ConfigHelper.GetGamePath();
+        HasError = !ValidateValue();
 
         return Task.CompletedTask;
     }

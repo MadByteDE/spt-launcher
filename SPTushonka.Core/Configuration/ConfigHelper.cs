@@ -436,7 +436,15 @@ public class ConfigHelper
         }
     }
 
-    // TODO: We should check if the user has write permission for a path at some point
+    public bool IsGamePathValid(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || File.Exists(path) || !Path.IsPathRooted(path))
+        {
+            return false;
+        }
+
+        return Directory.Exists(Path.Combine(path, "SPT_Runtime"));
+    }
 
     public bool IsPrefixPathValid(string path)
     {
