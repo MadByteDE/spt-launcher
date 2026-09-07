@@ -43,7 +43,6 @@
     protected override async Task SaveValue()
     {
         ConfigHelper.SetLinuxUmuPath(NewValue);
-        HasError = !ValidateValue();
     }
 
     protected override bool ValidateValue()
