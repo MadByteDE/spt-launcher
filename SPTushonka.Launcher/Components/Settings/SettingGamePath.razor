@@ -3,16 +3,13 @@
 <MudContainer Class="pa-0">
     <SettingSwitchComponent Switch="@(Enabled)" OptionName="@(LocaleHelper.Get("setting_set_game_path"))" SwitchFunc="SetEnabled" />
     <MudLink Color="Color.Default" Underline="Underline.None" Disabled="!Enabled" Class="@(GetLinkClasses())">
-        <MudTextField T="string" Value="@NewValue"
-                    ValueChanged="@OnNewValueChanged"
-                    Label="@(LocaleHelper.Get("setting_game_path"))"
-                    Variant="Variant.Outlined" Immediate="true"
-                    Margin="Margin.Dense" Adornment="Adornment.End"
-                    AdornmentIcon="@Icons.Material.Filled.Folder"
+        <MudTextField T="string" Value="@NewValue" ValueChanged="@OnNewValueChanged" Immediate="true"
+                    Label="@(LocaleHelper.Get("setting_game_path"))" Variant="Variant.Outlined" Margin="Margin.Dense"
+                    Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Folder"
                     AdornmentColor="Color.Info" OnAdornmentClick="SetFolderPath"
                     Error="@(HasError)" Disabled="!Enabled" />
-        <MudIconButton Color="@(IsSaved ? Color.Default : Color.Success)" Icon="@Icons.Material.Filled.Save"
-                    Disabled="IsSaved || !Enabled" OnClick="Save"/>
+        <MudIconButton Color="@(IsSaved ? Color.Default : Color.Success)"
+                    Icon="@Icons.Material.Filled.Save" Disabled="IsSaved || !Enabled" OnClick="Save"/>
     </MudLink>
 </MudContainer>
 @if (AddDiv)

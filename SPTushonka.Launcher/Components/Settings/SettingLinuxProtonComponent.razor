@@ -3,12 +3,10 @@
 
 <MudContainer Class="pa-0">
     <MudLink Color="Color.Default" Underline="Underline.None" Disabled="Disabled" Class="@(GetLinkClasses())">
-            <MudSelect T="string" Value="@NewValue"
-                    ValueChanged="@OnValueChanged"
-                    PopoverClass="limited-height-select" Margin="Margin.Dense"
-                    Label="@(LocaleHelper.Get("linux_proton_version"))" Error="@(HasError)"
-                    ErrorText="@(LocaleHelper.Get("setting_help_proton"))"
-                    Style="margin-right: 20px;" Variant="Variant.Outlined">
+            <MudSelect T="string" Value="@NewValue" ValueChanged="@OnValueChanged"
+                    Label="@(LocaleHelper.Get("linux_proton_version"))" Variant="Variant.Outlined" Margin="Margin.Dense"
+                    PopoverClass="limited-height-select" Style="margin-right: 20px;"
+                    Error="@(HasError)" ErrorText="@(LocaleHelper.Get("setting_help_proton"))">
                 @foreach (var item in Options)
                 {
                     <MudSelectItem Value="@item">@item</MudSelectItem>
@@ -18,7 +16,7 @@
     <a class="d-flex justify-center align-center py-2 px-5">
         <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" 
                 OnClick="AddProtonPath" Color="Color.Primary" Size="Size.Small">
-            @LocaleHelper.Get("linux_add_proton_path")
+            Label=@LocaleHelper.Get("linux_add_proton_path")
         </MudButton>
     </a>
 </MudContainer>

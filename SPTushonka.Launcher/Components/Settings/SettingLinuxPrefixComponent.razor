@@ -2,17 +2,13 @@
 
 <MudContainer Class="pa-0">
     <MudLink Color="Color.Default" Underline="Underline.None" Disabled="Disabled" Class="@(GetLinkClasses())">
-        <MudTextField T="string" Value="@NewValue"
-                    ValueChanged="@OnNewValueChanged"
-                    Label="@(LocaleHelper.Get("linux_wine_prefix"))"
-                    Variant="Variant.Outlined" Immediate="true"
-                    Margin="Margin.Dense" Adornment="Adornment.End"
-                    AdornmentIcon="@Icons.Material.Filled.Folder"
+        <MudTextField T="string" Value="@NewValue" ValueChanged="@OnNewValueChanged" Immediate="true"
+                    Label="@(LocaleHelper.Get("linux_wine_prefix"))" Variant="Variant.Outlined" Margin="Margin.Dense"
+                    Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Folder"
                     AdornmentColor="Color.Info" OnAdornmentClick="SetFolderPath"
-                    Error="@(HasError)"
-                    ErrorText="@(LocaleHelper.Get("setting_help_prefix"))"/>
-        <MudIconButton Color="@(IsSaved ? Color.Default : Color.Success)" Icon="@Icons.Material.Filled.Save"
-                    Disabled="IsSaved" OnClick="Save"/>
+                    Error="@(HasError)" ErrorText="@(LocaleHelper.Get("setting_help_prefix"))"/>
+        <MudIconButton Color="@(IsSaved ? Color.Default : Color.Success)"
+                    Icon="@Icons.Material.Filled.Save" Disabled="IsSaved" OnClick="Save"/>
     </MudLink>
 </MudContainer>
 @if (AddDiv)
