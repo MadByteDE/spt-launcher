@@ -361,10 +361,7 @@ public class GameHelper
 
     private static string GameProcessName
     {
-        get
-        {
-            return OperatingSystem.IsWindows() ? "EscapeFromTarkov" : "EscapeFromTarko";
-        }
+        get { return OperatingSystem.IsWindows() ? "EscapeFromTarkov" : "EscapeFromTarko"; }
     }
 
     public async Task<bool> WaitForGameRunning(TimeSpan timeout, CancellationToken token)

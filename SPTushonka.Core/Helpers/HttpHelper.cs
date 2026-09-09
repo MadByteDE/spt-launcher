@@ -1,5 +1,6 @@
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json;
 using ComponentAce.Compression.Libs.zlib;
 using Microsoft.Extensions.Logging;
@@ -48,8 +49,7 @@ public class HttpHelper
         _logger.LogDebug("Get: {Url}", url);
 
         var task = await _httpClient.GetAsync(BuildGameUrl(url), token);
-        var json = SimpleZlib.Decompress(await task.Content.ReadAsByteArrayAsync(token));
-        return JsonSerializer.Deserialize<T>(json);
+        return JsonSerializer.Deserialize<T>(ReadJson(await task.Content.ReadAsByteArrayAsync(token)));
     }
 
     /// <summary>
@@ -66,8 +66,7 @@ public class HttpHelper
                 return false;
             }
 
-            var json = SimpleZlib.Decompress(await response.Content.ReadAsByteArrayAsync(token));
-            var ping = JsonSerializer.Deserialize<SPTPingResponse>(json);
+            var ping = JsonSerializer.Deserialize<SPTPingResponse>(ReadJson(await response.Content.ReadAsByteArrayAsync(token)));
             return ping?.Response == "Pong!";
         }
         catch (Exception ex)
@@ -108,7 +107,9 @@ public class HttpHelper
             var totalBytes = response.Content.Headers.ContentLength ?? -1;
 
             await using (var source = await response.Content.ReadAsStreamAsync(token))
-            await using (var destination = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true))
+            await using (
+                var destination = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true)
+            )
             {
                 var buffer = new byte[81920];
                 long written = 0;
@@ -143,6 +144,15 @@ public class HttpHelper
 
         var task = await _httpClient.PutAsync(BuildGameUrl(url), content, token);
 
-        return JsonSerializer.Deserialize<T>(SimpleZlib.Decompress(await task.Content.ReadAsByteArrayAsync(token)));
+        return JsonSerializer.Deserialize<T>(ReadJson(await task.Content.ReadAsByteArrayAsync(token)));
+    }
+
+    /// <summary>
+    /// Servers up to 4.1 zlib the launcher responses, 5.0 sends them plain. The zlib header decides.
+    /// </summary>
+    private static string ReadJson(byte[] body)
+    {
+        var zlib = body.Length >= 2 && (body[0] & 0x0F) == 8 && ((body[0] << 8) | body[1]) % 31 == 0;
+        return zlib ? SimpleZlib.Decompress(body) : Encoding.UTF8.GetString(body);
     }
 }
