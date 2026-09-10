@@ -1,0 +1,23 @@
+{
+  "ietf_tag": "vi",
+  "native_name": "Tiếng Anh",
+  "page_not_found": "Không tìm thấy trang!",
+  "home": "Trang chủ",
+  "profiles": "Hồ sơ",
+  "servers": "Máy chủ",
+  "server": "Máy chủ",
+  "settings": "Cài đặt",
+  "info": "Thông tin",
+  "request_timed_out": "Yêu cầu đã hết thời gian!",
+  "home_add_server": "Thêm máy chủ mới",
+  "home_add_server_cta": "Hãy Thêm một máy chủ bằng nút \"Thêm máy chủ\" ở phía trên.",
+  "server_card_protect": "Không thể chỉnh sửa",
+  "server_card_edit": "Chỉnh sửa máy chủ",
+  "server_card_name": "Tên:",
+  "server_card_address": "Địa chỉ:",
+  "server_card_status_online": "Trực tuyến",
+  "server_card_status_offline": "Ngoại tuyến",
+  "server_card_status_checking": "Đang kiểm tra…",
+  "server_card_delete": "Xóa máy chủ",
+  "auto_connect_failed": "Không thể tự động kết nối với máy chủ gần đây nhất của bạn."
+}
