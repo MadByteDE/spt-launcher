@@ -1,4 +1,5 @@
 {
+  "ar-SA": "العربية (experimental)",
   "bg-BG": "Български",
   "de-DE": "Deutsch",
   "en": "English",
@@ -12,8 +13,9 @@
   "nl-NL": "Nederlands",
   "no-NO": "Norsk",
   "pl-PL": "Polski",
-  "pt-BR": "Português",
+  "pt-BR": "Português (Brasil)",
   "ru-RU": "Русский",
+  "sv-SE": "Svenska",
   "tr-TR": "Türkçe",
   "uk-UA": "українська",
   "vi-VN": "Tiếng Anh",
