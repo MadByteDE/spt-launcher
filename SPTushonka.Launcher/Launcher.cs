@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using MudBlazor;
 using MudBlazor.Services;
 using Photino.Blazor;
+using PhotinoX.App;
 using SPTarkov.Core.Configuration;
 using SPTarkov.Core.Extensions;
 using SPTarkov.Core.Helpers;
@@ -17,7 +18,8 @@ namespace SPTarkov.Launcher;
 public class Launcher
 {
     public static PhotinoBlazorApp App { get; set; } = null!;
-    private static ManifestEmbeddedFileProvider EmbedProvider { get; set; } = null!;
+
+    private static PhysicalFileProvider FileProvider { get; set; } = null!;
     private static ConfigHelper ConfigHelper { get; set; } = null!;
 
     private static int _visibleStateDuration = 2000;
@@ -74,10 +76,20 @@ public class Launcher
             return;
         }
 
-        EmbedProvider = new ManifestEmbeddedFileProvider(typeof(Launcher).Assembly, "wwwroot");
-        var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(EmbedProvider, args);
+        var appBuilder = PhotinoBlazorApp.CreateBuilder(
+            new PhotinoAppOptions
+            {
+                Args = args,
+                EnvironmentName = "Development",
+                ContentRootPath = AppContext.BaseDirectory,
+                WebRootPath = "wwwroot",
+            }
+        );
+
+        FileProvider = new PhysicalFileProvider(appBuilder.Environment.WebRootPath);
 
         appBuilder
+            .UseFileProvider(_ => FileProvider)
             .Services.AddSingleton<ConfigHelper>()
             .AddSingleton<GameHelper>()
             .AddSingleton<HttpHelper>()
@@ -123,7 +135,7 @@ public class Launcher
 
         AppDomain.CurrentDomain.UnhandledException += (_, error) =>
         {
-            App.MainWindow.ShowMessage("Fatal exception", error.ExceptionObject.ToString());
+            App.MainWindow.ShowMessage("Fatal exception", error.ExceptionObject.ToString()!);
         };
 
         try
@@ -169,14 +181,11 @@ public class Launcher
     private static void CustomizeComponent()
     {
         Directory.CreateDirectory(TemporaryFilesPath);
-        App.MainWindow.SetTemporaryFilesPath(TemporaryFilesPath).SetTitle(_appTitle);
+        App.MainWindow.SetUserDataFolder(TemporaryFilesPath).SetTitle(_appTitle);
 
         // Use extension method to get icon from embedded resource
         App.MainWindow.SetIconFile(
-            EmbedProvider
-                .GetDirectoryContents("images")
-                .FirstOrDefault(x => x.Name.ToLower().Contains("spt-logo.ico"))
-                ?.CreateReadStream()!,
+            FileProvider.GetDirectoryContents("images").FirstOrDefault(x => x.Name.ToLower().Contains("spt-logo.ico"))?.CreateReadStream()!,
             "spt-logo.ico"
         );
 
@@ -219,11 +228,11 @@ public class Launcher
             App.MainWindow.Height = ConfigHelper.GetConfig().StartSize.Height;
         }
 
-        App.MainWindow.RegisterWindowClosingHandler(OnExit);
+        App.MainWindow.RegisterClosingHandler(OnExit!);
         App.MainWindow.SetMinimized(true);
     }
 
-    private static bool OnExit(object sender, EventArgs e)
+    private static void OnExit(object sender, EventArgs e)
     {
         // When exiting from the tray the window is already hidden, so its size was saved at hide time.
         if (!_exitRequested)
@@ -237,10 +246,7 @@ public class Launcher
         if (!_exitRequested && OperatingSystem.IsWindows() && ConfigHelper.GetConfig().CloseToTray)
         {
             HideToTray();
-            return true;
         }
-
-        return false;
     }
 
     private static void HideToTray()
@@ -289,7 +295,7 @@ public class Launcher
 
         try
         {
-            var iconStream = EmbedProvider
+            var iconStream = FileProvider
                 .GetDirectoryContents("images")
                 .FirstOrDefault(x => x.Name.ToLower().Contains("spt-logo.ico"))
                 ?.CreateReadStream();

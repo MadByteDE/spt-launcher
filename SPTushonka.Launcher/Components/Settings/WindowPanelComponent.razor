@@ -66,7 +66,7 @@
         }
 
         AlwaysOnTopSwitch = !AlwaysOnTopSwitch;
-        Launcher.App.MainWindow.SetTopMost(AlwaysOnTopSwitch);
+        Launcher.App.MainWindow.SetTopmost(AlwaysOnTopSwitch);
         ConfigHelper.SetAlwaysOnTop(AlwaysOnTopSwitch);
 
         return Task.CompletedTask;
